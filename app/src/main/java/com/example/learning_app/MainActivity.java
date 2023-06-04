@@ -1,6 +1,8 @@
 package com.example.learning_app;
 
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,13 +35,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.concurrent.Executor;
+
 public class MainActivity extends AppCompatActivity {
     TextInputLayout pass, email;
     TextInputEditText password, editText;
     Button sing_in, googlesignInButton;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
     private boolean showOneTapUI = true;
-    FirebaseAuth mAuth;
+    FirebaseAuth mAuth,mAuth1;
+
     GoogleSignInClient googleSignInClient;
     TextView account;
 
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
 
         sing_in = findViewById(R.id.sing_in);
         googlesignInButton = findViewById(R.id.googlesignInButton);
@@ -84,20 +90,8 @@ public class MainActivity extends AppCompatActivity {
                 } else if (!validatePassword()) {
                     return;
                 } else {
-                    mAuth.signInWithEmailAndPassword(editText.getText().toString(), password.getText().toString())
-                            .addOnCompleteListener((Activity) getApplicationContext(), new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        // Handle successful sign-in here
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+
+                    GetUser();
                 }
             }
         });
@@ -117,6 +111,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void GetUser() {
+
+        mAuth.signInWithEmailAndPassword(editText.getText().toString(), password.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            Intent i = new Intent(getApplicationContext(), NavigationMainActivity.class);
+
+                            // on below line we are
+                            // starting a new activity.
+                            startActivity(i);
+
+                            // on the below line we are finishing
+                            // our current activity.
+                            finish();
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     @Override

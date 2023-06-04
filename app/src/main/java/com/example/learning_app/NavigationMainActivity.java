@@ -1,5 +1,7 @@
 package com.example.learning_app;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -21,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -30,6 +33,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.learning_app.databinding.ActivityNavigationMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,15 +49,26 @@ public class NavigationMainActivity extends AppCompatActivity {
     GoogleSignInAccount acct;
     GoogleSignInClient gsc;
     GoogleSignInOptions gso;
-
+    boolean Sign_In;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    String User_Name,User_profile;
+    FirebaseUser user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
+
+
+
         binding = ActivityNavigationMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-         acct = GoogleSignIn.getLastSignedInAccount(this);
+        acct = GoogleSignIn.getLastSignedInAccount(this);
+        if(acct == null){
+             user = mAuth.getCurrentUser();
+        }        
         setSupportActionBar(binding.appBarNavigationMain.toolbar);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         gsc = GoogleSignIn.getClient(this,gso);
@@ -61,7 +80,47 @@ public class NavigationMainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_navigation_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        updateNaveheader();
+        if(user != null){
+            db.collection("Student")
+                    .whereEqualTo("email",user.getEmail())
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()){
+                                for(QueryDocumentSnapshot document : task.getResult()){
+                                    User_Name = document.getData().get("name").toString();
+                                    User_profile = document.getData().get("imageUrl").toString();
+                                    Log.e("Profrile",User_Name);
+                                    Log.e("Profrile",User_profile);
+
+                                }
+                                NavigationView  navigationView = findViewById(R.id.nav_view);
+                                View headerView = navigationView.getHeaderView(0);
+                                TextView usename=headerView.findViewById(R.id.userName);
+                                TextView useemali=headerView.findViewById(R.id.userEmali);
+                                ImageView imageView=headerView.findViewById(R.id.imageView);
+
+                                    Log.e("Profrile",User_Name);
+                                    Log.e("Profrile",User_profile);
+                                    usename.setText(User_Name);
+                                    useemali.setText(user.getEmail());
+                                    String imageUrl = User_profile; // replace with your image URL
+                                    Glide.with(getApplicationContext())
+                                            .load(imageUrl)
+                                            .into(imageView);
+
+
+
+                            }else {
+                                Log.d(TAG, "signInWithEmail:Fail");
+                            }
+                        }
+                    });
+        }else {
+            updateNaveheader();
+        }
+
+
     }
 
     @Override
@@ -80,23 +139,35 @@ public class NavigationMainActivity extends AppCompatActivity {
 
     public void updateNaveheader(){
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView  navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView usename=headerView.findViewById(R.id.userName);
         TextView useemali=headerView.findViewById(R.id.userEmali);
         ImageView imageView=headerView.findViewById(R.id.imageView);
-        usename.setText(acct.getDisplayName());
-        useemali.setText(acct.getEmail());
-        String imageUrl = acct.getPhotoUrl().toString(); // replace with your image URL
-        Glide.with(this)
-                .load(imageUrl)
-                .into(imageView);
+        if(acct !=null){
+            usename.setText(acct.getDisplayName());
+            useemali.setText(acct.getEmail());
+            String imageUrl = acct.getPhotoUrl().toString(); // replace with your image URL
+            Glide.with(this)
+                    .load(imageUrl)
+                    .into(imageView);
+        }else {
+            Log.e("Profrile",User_Name);
+            Log.e("Profrile",User_profile);
+            usename.setText(User_Name);
+            useemali.setText(user.getEmail());
+            String imageUrl = User_profile; // replace with your image URL
+            Glide.with(this)
+                    .load(imageUrl)
+                    .into(imageView);
+        }
 
 
-        Log.d("Image URL:-",acct.getPhotoUrl().toString());
+
     }
 
     public void LogOut(MenuItem item) {
+
         gsc.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(Task<Void> task) {
@@ -136,6 +207,9 @@ public class NavigationMainActivity extends AppCompatActivity {
 
             }
         });
+
+        mAuth.signOut();
+
 
     }
 }
