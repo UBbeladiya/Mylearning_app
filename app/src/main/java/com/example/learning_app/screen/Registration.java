@@ -142,7 +142,6 @@ public class Registration extends AppCompatActivity {
                                     Log.e("Image getDownloadUrl",imageUrl);
                                     if (task.isSuccessful()) {
                                         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
                                         Map<String, Object> Data = new HashMap<>();
                                         Data.put("name", getname);
                                         Data.put("email", email);

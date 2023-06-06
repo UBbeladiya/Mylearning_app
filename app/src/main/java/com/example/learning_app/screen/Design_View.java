@@ -21,8 +21,8 @@ public class Design_View extends AppCompatActivity {
         setContentView(R.layout.activity_design_view);
 
         Intent intent = getIntent();
-       String weburl = intent.getStringExtra("Web_Url") ;
-Log.e("Uri.parse", weburl);
+        String weburl = intent.getStringExtra("Web_Url") ;
+        Log.e("Uri.parse", weburl);
         webView = findViewById(R.id.webView);
 
         // Enable JavaScript (optional)

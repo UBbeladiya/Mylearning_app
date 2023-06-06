@@ -2,16 +2,23 @@ package com.example.learning_app;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AppOpsManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -19,6 +26,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -41,6 +50,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class NavigationMainActivity extends AppCompatActivity {
 
@@ -54,6 +70,10 @@ public class NavigationMainActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     String User_Name,User_profile;
     FirebaseUser user = null;
+
+    String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+    long totalUsageTime;
+    String sh_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +140,66 @@ public class NavigationMainActivity extends AppCompatActivity {
             updateNaveheader();
         }
 
+        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        sh_date = sh.getString("Current_Date","");
+        Log.e("Current_Date", sh_date.toString());
+
+        if (sh_date.isEmpty()) {
+            Toast.makeText(this, "Add new date: " + currentDate, Toast.LENGTH_SHORT).show();
+            SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            myEdit.putString("Current_Date", currentDate);
+            myEdit.apply();
+        }else if(!sh_date.equals(currentDate)){
+            totalUsageTime=0;
+            SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            myEdit.putString("Current_Date", currentDate);
+            myEdit.apply();
+            Toast.makeText(this, "Update new Date", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(this, "Stored date is different from the current date", Toast.LENGTH_SHORT).show();
+        }
+        if (checkAppUsagePermission()) {
+            totalUsageTime = getTotalUsageTime();
+            Calendar calendar;
+            calendar = Calendar.getInstance();
+            //date format is:  "Date-Month-Year Hour:Minutes am/pm"
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm a"); //Date and time
+
+//Day of Name in full form like,"Saturday", or if you need the first three characters you have to put "EEE" in the date format and your result will be "Sat".
+            SimpleDateFormat sdf_ = new SimpleDateFormat("EEEE");
+            Date date = new Date();
+            String dayName = sdf_.format(date);
+            Log.e("Day = ", dayName);
+            String formattedTime = formatTime(totalUsageTime);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> Data = new HashMap<>();
+            Data.put("Hours",formattedTime);
+            Data.put("Day",dayName);
+            Data.put("Date",currentDate);
+
+            db.collection("Report").
+                    document(currentDate).
+                    set(Data).
+                    addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        // inside on failure method we are
+                        // displaying a failure message.
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Fail to update the data..", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        } else {
+            requestAppUsagePermission();
+        }
 
     }
 
@@ -211,6 +291,48 @@ public class NavigationMainActivity extends AppCompatActivity {
         mAuth.signOut();
 
 
+    }
+//=========================================================================
+    private boolean checkAppUsagePermission() {
+        AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), getPackageName());
+        return (mode == AppOpsManager.MODE_ALLOWED);
+    }
+
+    private void requestAppUsagePermission() {
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        startActivity(intent);
+    }
+
+    private long getTotalUsageTime() {
+        long totalUsageTime = 0;
+
+        UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -1); // 24 hours ago
+        Log.e("calendar",calendar.toString());
+        long startTime = calendar.getTimeInMillis();
+
+        long endTime = System.currentTimeMillis();
+        List<UsageStats> appUsageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startTime, endTime);
+
+
+        for (UsageStats usageStats : appUsageStats) {
+            if (usageStats.getPackageName().equals(getPackageName())) {
+                totalUsageTime += usageStats.getTotalTimeInForeground();
+            }
+        }
+
+
+        return totalUsageTime;
+    }
+
+    private String formatTime(long timeInMillis) {
+        long seconds = (timeInMillis / 1000) % 60;
+        long minutes = (timeInMillis / (1000 * 60)) % 60;
+        long hours = (timeInMillis / (1000 * 60 * 60)) % 24;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
 

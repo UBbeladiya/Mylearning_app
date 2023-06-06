@@ -62,7 +62,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
         holder.linear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.e("Pos",topicList.get(position).toString()+"= " + unit_Id);
                 db.collection("material")
                         .whereEqualTo("Unit", unit_Id)
                         .whereEqualTo("Topic",topicList.get(position).toString())
@@ -70,28 +70,36 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        Log.e("Data Type", document.getData().get("PDF").getClass().getSimpleName());
+                                Log.e("Task",task.getResult().toString());
+                                try {
+                                    if (task.isSuccessful()) {
+                                        Log.e("Task=2",task.getResult().getDocuments().toString());
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Log.e("Data Type", document.getData().get("PDF").getClass().getSimpleName());
+                                            Log.e("Data", document.getData().get("Code").toString());
+                                            HashMap<String,String> detail = new HashMap<String, String>();
+                                            detail.put("Code",document.getData().get("Code").toString());
+                                            detail.put("PDF",document.getData().get("PDF").toString());
+                                            detail.put("Topic",document.getData().get("Topic").toString());
+                                            detail.put("Unit",document.getData().get("Unit").toString());
+                                            detail.put("description",document.getData().get("description").toString());
+                                            detail.put("weburl",document.getData().get("weburl").toString());
+                                            detail.put("XML",document.getData().get("XML").toString());
+                                            Intent i = new Intent(context, ExVideoPlyerActivity.class);
+                                            i.putExtra("hashMap",detail);
+                                            view.getContext().startActivity(i);
+                                            Log.e("Code", String.valueOf(data.size()));
 
-                                        HashMap<String,String> detail = new HashMap<String, String>();
-                                        detail.put("Code",document.getData().get("Code").toString());
-                                        detail.put("PDF",document.getData().get("PDF").toString());
-                                        detail.put("Topic",document.getData().get("Topic").toString());
-                                        detail.put("Unit",document.getData().get("Unit").toString());
-                                        detail.put("description",document.getData().get("description").toString());
-                                        detail.put("weburl",document.getData().get("weburl").toString());
-                                        Intent i = new Intent(context, ExVideoPlyerActivity.class);
-                                        i.putExtra("hashMap",detail);
-                                        view.getContext().startActivity(i);
-                                        Log.e("Code", String.valueOf(data.size()));
+                                        }
 
+
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
                                     }
-
-
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                }catch (Exception e){
+                                    Log.e("Error getting documents", task.getException().toString());
                                 }
+
                             }
                         });
 

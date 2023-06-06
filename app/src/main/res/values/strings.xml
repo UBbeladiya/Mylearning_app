@@ -9,9 +9,44 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
+    <string name="menu_gallery">Report</string>
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="track_selection_title">Video Quality</string>
+
+    <string name="listing_java">
+        package io.github.kbiakov.codeviewexample;\n
+        \n
+        import android.os.Bundle;\n
+        import android.support.annotation.Nullable;\n
+        import android.support.v4.content.ContextCompat;\n
+        import android.support.v7.app.AppCompatActivity;\n
+        \n
+        import io.github.kbiakov.codeview.CodeView;\n
+        import io.github.kbiakov.codeview.highlight.ColorTheme;\n
+        \n
+        public class ListingsActivity extends AppCompatActivity {\n
+            \n
+            @Override\n
+            protected void onCreate(@Nullable Bundle savedInstanceState) {\n
+                super.onCreate(savedInstanceState);\n
+                setContentView(R.layout.activity_listings);\n
+                \n
+                int myColor = ContextCompat.getColor(this, R.color.code_content_background);\n
+                \n
+                CodeView codeView = (CodeView) findViewById(R.id.code_view);\n
+                \n
+                // use chaining to build view\n
+                codeView.highlightCode(\"js\")\n
+                        .setColorTheme(ColorTheme.SOLARIZED_LIGHT.withBgContent(myColor))\n
+                        .setCodeContent(getString(R.string.listing_js));\n
+                \n
+                // do not use chaining for built view\n
+                // (you can, but follow it should be performed sequentially)\n
+                codeView.setCodeContent(getString(R.string.listing_java));\n
+                codeView.highlightCode("java");\n
+            }\n
+        }
+    </string>
 
 </resources>
