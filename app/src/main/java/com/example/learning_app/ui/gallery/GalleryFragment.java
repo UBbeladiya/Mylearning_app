@@ -31,6 +31,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -80,8 +81,10 @@ public class GalleryFragment extends Fragment {
 
     void fillWeekDay(){
         weekDataArrayList.clear();
-
-        db.collection("Report")
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String my_id = mAuth.getCurrentUser().getUid();
+        Log.e(" My id is ",my_id);
+        db.collection("Student").document(my_id).collection("Report")
                 .orderBy("Date", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -165,7 +168,7 @@ public class GalleryFragment extends Fragment {
         xAxis.setLabelCount(labelName.size());
         xAxis.setLabelRotationAngle(270);
         chart.setFitBars(true);
-        chart.animateY(2000);
+        chart.animateY(4000);
 
 
         chart.invalidate();

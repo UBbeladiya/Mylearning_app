@@ -32,7 +32,7 @@ import java.util.Map;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    Button btn;
+   // Button btn;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         CardView cardview = binding.cardview;
-     //   btn = binding.btn;
+      //  btn = binding.btn;
         cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,19 +50,107 @@ public class HomeFragment extends Fragment {
             }
         });
         //TextView, EditText, ImageView, ListView, ScrollView, CardView, GridView, VideoView
-       /*  btn.setOnClickListener(new View.OnClickListener() {
+        /* btn.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
                  FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                  Map<String, Object> Data = new HashMap<>();
               //   Data.put("Code","");
-                 Data.put("Code","<?xml version=\"1.0\" encoding=\"utf-8\"?><!-- XML implementation of Card Layout --> <androidx.cardview.widget.CardView \txmlns:android=\"http://schemas.android.com/apk/res/android\" \txmlns:app=\"http://schemas.android.com/apk/res-auto\" \tandroid:layout_width=\"match_parent\" \tandroid:layout_height=\"120dp\" \tandroid:layout_gravity=\"center\" \tandroid:layout_margin=\"5dp\" \tapp:cardCornerRadius=\"5dp\" \tapp:cardElevation=\"5dp\">  \t<LinearLayout \t\tandroid:layout_width=\"match_parent\" \t\tandroid:layout_height=\"wrap_content\" \t\tandroid:orientation=\"vertical\">  \t\t<ImageView \t\t\tandroid:id=\"@+id/idIVcourse\" \t\t\tandroid:layout_width=\"100dp\" \t\t\tandroid:layout_height=\"100dp\" \t\t\tandroid:layout_gravity=\"center\" \t\t\tandroid:src=\"@mipmap/ic_launcher\" />  \t\t<TextView \t\t\tandroid:id=\"@+id/idTVCourse\" \t\t\tandroid:layout_width=\"match_parent\" \t\t\tandroid:layout_height=\"wrap_content\" \t\t\tandroid:text=\"@string/app_name\" \t\t\tandroid:textAlignment=\"center\" /> \t</LinearLayout> </androidx.cardview.widget.CardView>");
-                 Data.put("PDF", "https://www.tutorialspoint.com/android/android_tutorial.pdf");
-                 Data.put("Topic", "GridView");
-                 Data.put("Unit", "bMXXZtwLkkQwEpur43pd");
-                 Data.put("description",  "A GridView is a type of AdapterView that displays items in a two-dimensional scrolling grid. Items are inserted into this grid layout from a database or from an array. The adapter is used for displaying this data, setAdapter() method is used to join the adapter with GridView. The main function of the adapter in GridView is to fetch data from a database or array and insert each piece of data in an appropriate item that will be displayed in GridView. This is what the GridView structure looks like.");
-                 Data.put("weburl", "https://www.geeksforgeeks.org/gridview-in-android-with-example/");
+                Data.put("Code","package com.gtappdevelopers.kotlingfgproject;\n" +
+                        "\n" +
+                        "import android.net.Uri;\n" +
+                        "import android.os.Bundle;\n" +
+                        "import android.widget.MediaController;\n" +
+                        "import android.widget.VideoView;\n" +
+                        "import androidx.appcompat.app.AppCompatActivity;\n" +
+                        "\n" +
+                        "public class MainActivity extends AppCompatActivity {\n" +
+                        "\n" +
+                        "\t// on below line we are creating variables.\n" +
+                        "\tprivate VideoView videoView;\n" +
+                        "\t\n" +
+                        "\t// Your Video URL\n" +
+                        "\tString videoUrl = \"Paste Your Video URL Here\";\n" +
+                        "\n" +
+                        "\t@Override\n" +
+                        "\tprotected void onCreate(Bundle savedInstanceState) {\n" +
+                        "\t\tsuper.onCreate(savedInstanceState);\n" +
+                        "\t\tsetContentView(R.layout.activity_main);\n" +
+                        "\n" +
+                        "\t\t// on below line we are initializing our variables.\n" +
+                        "\t\tvideoView = findViewById(R.id.idVideoView);\n" +
+                        "\n" +
+                        "\t\t// Uri object to refer the\n" +
+                        "\t\t// resource from the videoUrl\n" +
+                        "\t\tUri uri = Uri.parse(videoUrl);\n" +
+                        "\n" +
+                        "\t\t// sets the resource from the\n" +
+                        "\t\t// videoUrl to the videoView\n" +
+                        "\t\tvideoView.setVideoURI(uri);\n" +
+                        "\n" +
+                        "\t\t// creating object of\n" +
+                        "\t\t// media controller class\n" +
+                        "\t\tMediaController mediaController = new MediaController(this);\n" +
+                        "\n" +
+                        "\t\t// sets the anchor view\n" +
+                        "\t\t// anchor view for the videoView\n" +
+                        "\t\tmediaController.setAnchorView(videoView);\n" +
+                        "\n" +
+                        "\t\t// sets the media player to the videoView\n" +
+                        "\t\tmediaController.setMediaPlayer(videoView);\n" +
+                        "\n" +
+                        "\t\t// sets the media controller to the videoView\n" +
+                        "\t\tvideoView.setMediaController(mediaController);\n" +
+                        "\n" +
+                        "\t\t// starts the video\n" +
+                        "\t\tvideoView.start();\n" +
+                        "\n" +
+                        "\t}\n" +
+                        "}\n"+"\n" );
+
+                 Data.put("PDF", "https://firebasestorage.googleapis.com/v0/b/learning-d3962.appspot.com/o/video%2Fvideoplayback.mp4?alt=media&token=bb39d544-5a67-49e2-afc6-7ea4cae40011");
+                 Data.put("Topic", "VideoView");
+                 Data.put("Unit", "WgZMwLp2ecnR0J6FZLYB");
+                // Data.put("XML", "");
+                 Data.put("XML","<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                         "<RelativeLayout\n" +
+                         "\txmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
+                         "\txmlns:tools=\"http://schemas.android.com/tools\"\n" +
+                         "\tandroid:id=\"@+id/idRLContainer\"\n" +
+                         "\tandroid:layout_width=\"match_parent\"\n" +
+                         "\tandroid:layout_height=\"match_parent\"\n" +
+                         "\tandroid:orientation=\"vertical\"\n" +
+                         "\ttools:context=\".MainActivity\">\n" +
+                         "\n" +
+                         "\t<!--on below line we are creating a simple text view-->\n" +
+                         "\t<TextView\n" +
+                         "\t\tandroid:id=\"@+id/idTVHeading\"\n" +
+                         "\t\tandroid:layout_width=\"match_parent\"\n" +
+                         "\t\tandroid:layout_height=\"wrap_content\"\n" +
+                         "\t\tandroid:layout_margin=\"20dp\"\n" +
+                         "\t\tandroid:gravity=\"center\"\n" +
+                         "\t\tandroid:padding=\"10dp\"\n" +
+                         "\t\tandroid:text=\"Video View in Android\"\n" +
+                         "\t\tandroid:textAlignment=\"center\"\n" +
+                         "\t\tandroid:textColor=\"@color/black\"\n" +
+                         "\t\tandroid:textSize=\"20sp\"\n" +
+                         "\t\tandroid:textStyle=\"bold\" />\n" +
+                         "\n" +
+                         "\t<!-- adding VideoView to the layout -->\n" +
+                         "\t<VideoView\n" +
+                         "\t\tandroid:id=\"@+id/idVideoView\"\n" +
+                         "\t\tandroid:layout_width=\"match_parent\"\n" +
+                         "\t\tandroid:layout_height=\"wrap_content\"\n" +
+                         "\t\tandroid:layout_below=\"@id/idTVHeading\"\n" +
+                         "\t\tandroid:layout_centerInParent=\"true\" />\n" +
+                         "\t\n" +
+                         "</RelativeLayout>\n"
+
+                 );
+
+                 Data.put("description", "VideoView is a UI widget that is used to display video content to the users within android applications. We can add video in this video view from different resources such as a video stored on the user device, or a video from a server. In this article, we will take a look at How to use Video View in the android application. A sample video is given below to get an idea about what we are going to do in this article.");
+                 Data.put("weburl", "https://www.geeksforgeeks.org/videoview-in-android/");
 
                  db.collection("material")
                          .add(Data)

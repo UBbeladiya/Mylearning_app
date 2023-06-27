@@ -74,6 +74,8 @@ public class NavigationMainActivity extends AppCompatActivity {
     String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
     long totalUsageTime;
     String sh_date;
+    String my_id ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +90,11 @@ public class NavigationMainActivity extends AppCompatActivity {
         acct = GoogleSignIn.getLastSignedInAccount(this);
         if(acct == null){
              user = mAuth.getCurrentUser();
-        }        
+
+        }
+        String my_id = mAuth.getCurrentUser().getUid();
+        Log.e(" My id is ",my_id);
+
         setSupportActionBar(binding.appBarNavigationMain.toolbar);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         gsc = GoogleSignIn.getClient(this,gso);
@@ -180,7 +186,8 @@ public class NavigationMainActivity extends AppCompatActivity {
             Data.put("Day",dayName);
             Data.put("Date",currentDate);
 
-            db.collection("Report").
+
+            db.collection("Student").document(my_id).collection("Report").
                     document(currentDate).
                     set(Data).
                     addOnSuccessListener(new OnSuccessListener<Void>() {

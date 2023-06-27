@@ -44,7 +44,8 @@ public class ExVideoPlyerActivity extends AppCompatActivity {
     ImageButton btnText;
 //    LookAtMe lookAtMe;
 
-    String live_url = "https://firebasestorage.googleapis.com/v0/b/learning-d3962.appspot.com/o/video%2Fvideoplayback.mp4?alt=media&token=9004f345-ae1c-4502-847d-a85ead5119db&_gl=1*1qxuo13*_ga*MTcxMDEyNzE5MS4xNjcxMjU4MTUy*_ga_CW55HF8NVT*MTY4NjAwMjE1OC4zOS4xLjE2ODYwMDI0MTUuMC4wLjA.";
+  //  String live_url = "https://firebasestorage.googleapis.com/v0/b/learning-d3962.appspot.com/o/video%2Fvideoplayback.mp4?alt=media&token=9004f345-ae1c-4502-847d-a85ead5119db&_gl=1*1qxuo13*_ga*MTcxMDEyNzE5MS4xNjcxMjU4MTUy*_ga_CW55HF8NVT*MTY4NjAwMjE1OC4zOS4xLjE2ODYwMDI0MTUuMC4wLjA.";
+    String live_url;
 
     ProgressBar spiiner;
     ImageView fullScreenOp;
@@ -59,6 +60,7 @@ public class ExVideoPlyerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         hashMap = (HashMap<String, String>) intent.getSerializableExtra("hashMap");
         Log.e("Code", hashMap.get("Code"));
+        live_url = hashMap.get("PDF");
         getSupportActionBar().setTitle(hashMap.get("Topic"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         spiiner = findViewById(R.id.progressBar);

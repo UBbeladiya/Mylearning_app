@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
+public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass>  implements GestureDetector.OnGestureListener{
     Context context;
     ArrayList topicList;
     String unit_Id;
@@ -59,6 +61,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
     @Override
     public void onBindViewHolder(@NonNull TopicAdapter.MyClass holder, @SuppressLint("RecyclerView") int position) {
         holder.text.setText(topicList.get(position).toString());
+
+        final SwipeDetector swipeDetector = new SwipeDetector();
         holder.linear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,6 +89,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
                                             detail.put("description",document.getData().get("description").toString());
                                             detail.put("weburl",document.getData().get("weburl").toString());
                                             detail.put("XML",document.getData().get("XML").toString());
+
+
                                             Intent i = new Intent(context, ExVideoPlyerActivity.class);
                                             i.putExtra("hashMap",detail);
                                             view.getContext().startActivity(i);
@@ -111,6 +117,36 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.MyClass> {
     @Override
     public int getItemCount() {
         return topicList.size();
+    }
+
+    @Override
+    public boolean onDown(@NonNull MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(@NonNull MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(@NonNull MotionEvent motionEvent, @NonNull MotionEvent motionEvent1, float v, float v1) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(@NonNull MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onFling(@NonNull MotionEvent motionEvent, @NonNull MotionEvent motionEvent1, float v, float v1) {
+        return false;
     }
 
     public class MyClass extends RecyclerView.ViewHolder {

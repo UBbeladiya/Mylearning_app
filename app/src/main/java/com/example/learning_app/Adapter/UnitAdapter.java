@@ -43,15 +43,23 @@ import java.util.ArrayList;
     @Override
     public void onBindViewHolder(@NonNull MyClass holder, @SuppressLint("RecyclerView") int position) {
         holder.text.setText(data.get(position).getName());
-
+        final SwipeDetector swipeDetector = new SwipeDetector();
+        holder.linear.setOnTouchListener(swipeDetector);
         holder.linear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.e("My Id", data.get(position).getId());
-                Intent i = new Intent(context, SubjectTopicActivity.class);
-                i.putExtra("Unit_Id", data.get(position).getId());
-                i.putExtra("Topic", (ArrayList) data.get(position).getTopic());
-                view.getContext().startActivity(i);
+                if (swipeDetector.swipeDetected()){
+                    // do the onSwipe action
+                    Intent i = new Intent(context, SubjectTopicActivity.class);
+                    i.putExtra("Unit_Id", data.get(position).getId());
+                    i.putExtra("Topic", (ArrayList) data.get(position).getTopic());
+                    view.getContext().startActivity(i);
+                } else {
+                    // do the onItemLongClick action
+                }
+
+
             }
         });
 
