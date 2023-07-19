@@ -90,7 +90,6 @@ public class NavigationMainActivity extends AppCompatActivity {
         acct = GoogleSignIn.getLastSignedInAccount(this);
         if(acct == null){
              user = mAuth.getCurrentUser();
-
         }
         String my_id = mAuth.getCurrentUser().getUid();
         Log.e(" My id is ",my_id);
